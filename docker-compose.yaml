@@ -11,25 +11,22 @@ services:
     image: ollama/ollama:latest
 
   open-webui:
-    build:
-      context: .
-      args:
-        OLLAMA_BASE_URL: '/ollama'
-      dockerfile: Dockerfile
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
+    ports:
+      - '9080:8080'
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=
+      - OPENAI_API_BASE_URLS=https://api.kksj.org/v1;https://api.aigcbest.top/v1
+      - OPENAI_API_KEYS=sk-2FWS30wI0O0gG0a57475B7B50fA7489c84D929F8A7085dC8;sk-1JW6FLqwCAwYq0KI5e8f9069F9E048A4A07e1f5b9b5cE41b
     depends_on:
       - ollama
-    ports:
-      - ${OPEN_WEBUI_PORT-3000}:8080
-    environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
-      - 'WEBUI_SECRET_KEY='
+    restart: always
     extra_hosts:
       - host.docker.internal:host-gateway
-    restart: unless-stopped
 
 volumes:
   ollama: {}
